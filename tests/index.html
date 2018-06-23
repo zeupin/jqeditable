@@ -36,18 +36,23 @@
 
 <body>
   <div style="height:100px;"></div>
-  <p class="editable" data-ed-name="hi" data-ed-value="这是测试" data-ed-params="id=1&name=2" data-ed-label="">这是测试</p>
+  <p class="editable" data-ed-name="hi" data-ed-value="这是测试" data-ed-params="id=1&name=" data-ed-label="">这是测试</p>
 
   <div class="container debug">
     <div class="a1 debug">a1</div>
     <div class="a2 debug editable">a2</div>
   </div>
+
+  <div class="editable" data-ed-params="id=1">
+    <span data-ed-name="from">NZD</span>
+    <span data-ed-name="to">CNY</span>
+    <span data-ed-name="rate">4.6</span>
+  </div>
+
   <script>
     $(".editable").editable("http://ulook/wxsadmin/save", {
 
     });
-    var a = escape(JSON.stringify({a:1}));
-    console.log(a);
   </script>
 </body>
 

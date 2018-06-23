@@ -22,31 +22,54 @@
       "url": url
     }, options);
 
-    // 构造处理函数
-    var onedit = settings.onedit || function () {};
-    var onsubmit = settings.onsubmit || function () {};
-    var onreset = settings.onreset || function () {};
-    var onerror = settings.onerror || function () {};
-    var beforesubmit = settings.beforesubmit || function () {};
-
     // 对需要使用就地编辑的元素逐个进行处理
     return this.each(function () {
-      var self = this;
+      $.fn.editable.make(this, [], settings);
+    });
+  }
+
+
+  /**
+   * 构造器
+   *
+   * @param {HTMLElement} me 当前元素
+   * @param {Array} params 附加参数
+   */
+  $.fn.editable.make = function (me, params, settings) {
+    // $(me)
+    var j_me = $(me);
+
+    // params做叠加
+    var ed_params = j_me.data("ed-params");
+    if (ed_params) {
+      ed_params = $.fn.editable.parseParams(ed_params);
+    } else {
+      ed_params = [];
+    }
+    var new_params = params.concat(ed_params);
+
+    // 如果有data-ed-name属性，则生成一个form
+    if (this.hasAttribute("data-ed-name")) {
 
       // dblclick可激活编辑状态
-      $(this).dblclick(function (e) {
+      j_me.dblclick(function (e) {
+        /* $(this) */
+        var jqthis = $(this);
 
         /* 阻止双击的默认行为 */
         e.preventDefault();
         e.stopPropagation();
 
-        // 取元素的data-*参数
-        var jqthis = $(this);
-        var ed_name = jqthis.data("ed-name"); // 字段名
-        var ed_value = jqthis.data("ed-value"); // 字段初值
-        var ed_params = jqthis.data("ed-params"); // 补充参数
-        ed_params = $.fn.editable.parseParams(ed_params);
-        console.log(ed_params);
+        // data-ed-name
+        var ed_name = j_me.data("ed-name");
+
+        // data-ed-value
+        var ed_value = null;
+        if (this.hasAttribute("data-ed_value")) {
+          ed_value = jqthis.data("ed-value"); // 字段初值
+        } else {
+          ed_value = this.innerText;
+        }
 
         // form
         var form = $("<form></form>");
@@ -74,38 +97,6 @@
           top: posTop + 'px'
         });
 
-        /* form.submit() */
-        form.submit(function (e) {
-
-          /* 阻止表单的默认行为 */
-          e.preventDefault();
-          e.stopPropagation();
-
-          var formdata = $(this).serializeArray();
-          var data = ed_params.concat(formdata);
-
-          $.ajax({
-            // 请求
-            url: url,
-            type: "GET",
-            data: data,
-            crossDomain: true,
-            xhrFields: {
-              'Access-Control-Allow-Origin': '*'
-            },
-            // 应答
-            success: function (data, status, xhq) {
-
-              $.fn.editable.msgbox({
-                "text": data,
-              }, form);
-              console.log("成功", data, status, xhq);
-            },
-            error: function (xhr, status, err) {}
-          });
-          return false;
-        });
-
         /* form 输入控件 */
         var divInput = $('<div class="editable_div_input"></div>');
         var input = $('<input type="text"/>');
@@ -113,7 +104,6 @@
           name: ed_name,
           value: ed_value
         });
-        console.log(input);
         divInput.append(input);
 
         /* form 提交按钮和取消按钮 */
@@ -128,12 +118,48 @@
         /* 拼装form */
         form.append(divInput, divButtons);
 
+        /* form.submit() */
+        form.submit(function (e) {
+
+          /* 阻止表单的默认行为 */
+          e.preventDefault();
+          e.stopPropagation();
+
+          var formdata = $(this).serializeArray();
+          var data = new_params.concat(formdata);
+          var url = settings.url;
+
+          $.ajax({
+            // 请求
+            url: url,
+            type: "GET",
+            data: data,
+            crossDomain: true,
+            xhrFields: {
+              'Access-Control-Allow-Origin': '*'
+            },
+            // 应答
+            success: function (data, status, xhq) {
+              $.fn.editable.msgbox({
+                "text": data,
+              }, form);
+            },
+            error: function (xhr, status, err) {}
+          });
+          return false;
+        });
+
         /* 把form插入到当前元素之后 */
         jqthis.after(form);
 
         /* focus到form的第一个有效输入控件 */
         form.find(':input:visible:enabled:first').focus();
       });
+    }
+
+    // 遍历子元素
+    j_me.children().each(function (idx, ele) {
+      $.fn.editable.make(ele, new_params, settings);
     });
   }
 
