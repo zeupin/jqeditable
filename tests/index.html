@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>editable tests</title>
+  <script src="jquery-3.3.1.min.js"></script>
+  <script src="../src/jquery.editable.js"></script>
+  <style>
+    .container {
+      position: absolute;
+      top: 100px;
+      left: 300px;
+      height: 100px;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      width: 500px;
+    }
+
+    .a1 {
+      width: 100px;
+    }
+
+    .a2 {
+      width: 300px;
+    }
+
+    .debug {
+      border: 1px solid red;
+    }
+  </style>
+</head>
+
+<body>
+  <div style="height:100px;"></div>
+  <p class="editable" data-ed-name="hi" data-ed-value="这是测试" data-ed-params="id=1&name=2" data-ed-label="">这是测试</p>
+
+  <div class="container debug">
+    <div class="a1 debug">a1</div>
+    <div class="a2 debug editable">a2</div>
+  </div>
+  <script>
+    $(".editable").editable("http://ulook/wxsadmin/save", {
+
+    });
+    var a = escape(JSON.stringify({a:1}));
+    console.log(a);
+  </script>
+</body>
+
+</html>
