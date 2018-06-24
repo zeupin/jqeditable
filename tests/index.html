@@ -49,9 +49,24 @@
     <span data-ed-name="rate">4.6</span>
   </div>
 
+  <table class="editable">
+    <tr data-ed-params="id=1">
+      <td data-ed-name="name">张三</td>
+      <td data-ed-name="age">18</td>
+      <td data-ed-name="gender">男</td>
+    </tr>
+    <tr data-ed-params="id=2">
+      <td data-ed-name="name">李四</td>
+      <td data-ed-name="age">20</td>
+      <td data-ed-name="gender">女</td>
+    </tr>
+  </table>
+
   <script>
     $(".editable").editable("http://ulook/wxsadmin/save", {
-
+      success: function(data){
+        console.log(data);
+      }
     });
   </script>
 </body>
