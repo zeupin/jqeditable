@@ -90,11 +90,19 @@
         while (posParent != document.body) {
           posParent = posParent.offsetParent;
           var posParentPosition = $(posParent).css("position");
-          if (['absolute', 'relative', 'fixed'].indexOf(posParentPosition) == -1) {
+          if (posParentPosition == 'absolute') {
+            break;
+          } else if (posParentPosition == 'relative') {
+            // 正常显示流
             posLeft += posParent.offsetLeft;
             posTop += posParent.offsetTop;
-          } else {
             break;
+          } else if (posParentPosition == 'fixed') {
+            break;
+          } else {
+            // 正常显示流
+            posLeft += posParent.offsetLeft;
+            posTop += posParent.offsetTop;
           }
         }
         form.css({
