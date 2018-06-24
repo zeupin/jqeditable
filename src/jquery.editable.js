@@ -139,6 +139,7 @@
             url: settings.url,
             type: settings.ajaxType,
             data: data,
+            dataType: "json",
           };
 
           // ajax.是否允许跨域
@@ -152,41 +153,58 @@
 
           // ajax应答
           var response = {
+            // 成功
             success: function (data, status, xhq) {
 
               if (data[0] === 0) {
-                // 修改成功
+                // 显示“修改成功”
                 $.fn.editable.msgbox({
                   "text": '修改成功',
                 }, form);
 
-                // 把返回的数据保存到 data-ed-value
-                jqthis.attr("data-ed-value", data[2]);
-
-                // 把返回的数据
-                jqthis.text(data[2]);
-
-                // 如果设置了success回调函数
+                /*
+                 * 如果设置了success回调函数，则交success处理。
+                 * 如果没有设置success回调函数，则用默认方式处理。
+                 */
                 if (settings.success && $.isFunction(settings.success)) {
-                  settings.success(data[2]);
+                  settings.success(ele, data[2]);
+                } else {
+                  // 把返回的数据保存到 data-ed-value
+                  jqthis.attr("data-ed-value", data[2]);
+
+                  // 用返回的数据更新text
+                  jqthis.text(data[2]);
                 }
               } else {
                 // 返回的格式不对，或者data[0]不为0
                 $.fn.editable.msgbox({
                   "text": '修改失败',
                 }, form);
+
+                // 如果设置了error回调函数
+                if (settings.error && $.isFunction(settings.error)) {
+                  settings.error(data[1]);
+                }
               }
             },
 
+            // 有错
             error: function (xhr, status, err) {
               $.fn.editable.msgbox({
                 "text": '修改失败',
               }, form);
+
+              // 如果设置了error回调函数
+              if (settings.error && $.isFunction(settings.error)) {
+                settings.error(status);
+              }
             }
           }
 
           // 发起请求
           $.ajax($.extend(request, response));
+
+          // 返回false
           return false;
         });
 
