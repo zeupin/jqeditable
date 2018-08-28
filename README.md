@@ -1,15 +1,15 @@
-# editable
+# jqeditable
 
-`jquery.editable`是[宙品科技](http://zeupin.com)制作的一款基于`jquery`的就地编辑插件，简单易用，MIT协议。
+`jquery.jqeditable`是[宙品科技](http://zeupin.com)制作的一款基于`jquery`的就地编辑插件，简单易用，MIT协议。
 
 ## 方法
 
-1. 页面中引入`jquery.js`和`jquery.editable.js`。
+1. 页面中引入`jquery.js`和`jquery.jqeditable.js`。
 2. 对要输入的元素，加上`data-ed-name`属性（必填），以及其它一些控制属性，如`data-ed-value`（选填）。
-3. 用`$(jQuery选择集).editable(后台文件路径, {选项集合})`激活。
+3. 用`$(jQuery选择集).jqeditable(后台文件路径, {配置项})`激活。
 4. 双击要就地编辑的元素，可激活编辑界面。
-5. editable插件把修改后的内容提交给后台，后台处理后，返回形如[code, msg, data]的固定格式的json应答（例如返回`[0, null, "李四"]`）。
-6. editable根据返回结果，更新前端的内容。有success回调的，调用success回调；没有success回调的，就更新待编辑元素的data-ed-value和innerText。
+5. jqeditable插件把修改后的内容提交给后台，后台处理后，返回形如[code, msg, data]的固定格式的json应答（例如返回`[0, null, "李四"]`）。
+6. jqeditable根据返回结果，更新前端的内容。有success回调的，调用success回调；没有success回调的，就更新待编辑元素的data-ed-value和innerText。
 
 ## 示例
 
@@ -19,13 +19,13 @@
   ...
 </head>
 <body>
-  <div class="editable" data-ed-params="id=1">
+  <div class="jqeditable" data-ed-params="id=1">
     <span data-ed-name="from">NZD</span>
     <span data-ed-name="to">CNY</span>
     <span data-ed-name="rate">4.6</span>
   </div>
 
-  <table class="editable">
+  <table class="jqeditable">
     <tr data-ed-params="id=1">
       <td data-ed-name="name">张三</td>
       <td data-ed-name="age">18</td>
@@ -39,10 +39,10 @@
   </table>
 
   <script src="path/to/jquery.js"></script>
-  <script src="path/to/jquery.editable.js"></script>
+  <script src="path/to/jquery.jqeditable.js"></script>
 
   <script>
-    $(".editable").editable("http://path/to/your/app/save.php", {
+    $(".jqeditable").jqeditable("http://path/to/your/app/save.php", {
       ajaxType: "POST"
     });
   </script>
@@ -60,7 +60,7 @@
       "name" => "王五",
     ]
 5. 后台返回固定json格式的数据，格式为 [code, msg, data]。code===0时，表示后台操作成功，code为其它（甚至是字符串'0'）表示操作失败。
-6. editable收到后台的应答后，检查code===0，则显示“修改成功”，然后把新的data更新data-ed-value的值和前台的显示内容。如果code!==0，则显示“修改失败”。
+6. jqeditable收到后台的应答后，检查code===0，则显示“修改成功”，然后把新的data更新data-ed-value的值和前台的显示内容。如果code!==0，则显示“修改失败”。
 
 ## options
 
