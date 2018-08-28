@@ -5,9 +5,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>editable tests</title>
+  <title>jqeditable tests</title>
   <script src="jquery-3.3.1.min.js"></script>
-  <script src="../src/jquery.editable.js"></script>
+  <script src="../src/jquery.jqeditable.js"></script>
   <style>
     .container {
       position: absolute;
@@ -36,20 +36,20 @@
 
 <body>
   <div style="height:100px;"></div>
-  <p class="editable" data-ed-name="hi" data-ed-value="这是测试" data-ed-params="id=1&name=" data-ed-label="">这是测试</p>
+  <p class="jqeditable" data-ed-name="hi" data-ed-value="这是测试" data-ed-params="id=1&name=" data-ed-label="">这是测试</p>
 
   <div class="container debug">
     <div class="a1 debug">a1</div>
-    <div class="a2 debug editable">a2</div>
+    <div class="a2 debug jqeditable">a2</div>
   </div>
 
-  <div class="editable" data-ed-params="id=1">
+  <div class="jqeditable" data-ed-params="id=1">
     <span data-ed-name="from">NZD</span>
     <span data-ed-name="to">CNY</span>
     <span data-ed-name="rate">4.6</span>
   </div>
 
-  <table class="editable">
+  <table class="jqeditable">
     <tr data-ed-params="id=1">
       <td data-ed-name="name">张三</td>
       <td data-ed-name="age">18</td>
@@ -63,7 +63,7 @@
   </table>
 
   <script>
-    $(".editable").editable("http://ulook/wxsadmin/save", {
+    $(".jqeditable").jqeditable("http://ulook/wxsadmin/save", {
       success: function(ele, data){
         console.log(ele, data);
       }

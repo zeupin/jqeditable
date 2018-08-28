@@ -3,7 +3,7 @@
  *
  * @author Macc Liu
  * @copyright (c) 2018 Zeupin.com.
- * @license MIT License (see https://github.com/zeupin/editable/blob/master/LICENSE)
+ * @license MIT License (see https://github.com/zeupin/jqeditable/blob/master/LICENSE)
  *
  */
 (function ($) {
@@ -16,15 +16,15 @@
    * @param {String|Function} url 服务器端的php文件地址或本地的js处理函数
    * @param {Object} options 选项
    */
-  $.fn.editable = function (url, options) {
+  $.fn.jqeditable = function (url, options) {
     // 合并设置
-    var settings = $.extend({}, $.fn.editable.defaults, {
+    var settings = $.extend({}, $.fn.jqeditable.defaults, {
       "url": url
     }, options);
 
     // 对需要使用就地编辑的元素逐个进行设置
     return this.each(function () {
-      $.fn.editable.make(this, [], settings);
+      $.fn.jqeditable.make(this, [], settings);
     });
   }
 
@@ -36,7 +36,7 @@
    * @param {Array} params 附加参数
    * @param {Object} settings 传入的设置参数
    */
-  $.fn.editable.make = function (ele, params, settings) {
+  $.fn.jqeditable.make = function (ele, params, settings) {
     // $(ele)
     var j_ele = $(ele);
 
@@ -45,7 +45,7 @@
     if (ele.hasAttribute("data-ed-params")) {
       var ed_params = j_ele.data("ed-params");
       if (ed_params) {
-        ed_params = $.fn.editable.parseParams(ed_params);
+        ed_params = $.fn.jqeditable.parseParams(ed_params);
       } else {
         ed_params = [];
       }
@@ -112,7 +112,7 @@
         });
 
         /* form 输入控件 */
-        var divInput = $('<div class="editable_div_input"></div>');
+        var divInput = $('<div class="jqeditable_div_input"></div>');
         var input = $('<input type="text"/>');
         input.attr({
           name: ed_name,
@@ -121,7 +121,7 @@
         divInput.append(input);
 
         /* form 提交按钮和取消按钮 */
-        var divButtons = $('<div class="editable_div_buttons"></div>');
+        var divButtons = $('<div class="jqeditable_div_buttons"></div>');
         var submitBtn = $('<input type="submit" value="提交">');
         var cancelBtn = $('<input type="button" value="取消">');
         cancelBtn.click(function (e) {
@@ -166,7 +166,7 @@
 
               if (data[0] === 0) {
                 // 显示“修改成功”
-                $.fn.editable.msgbox({
+                $.fn.jqeditable.msgbox({
                   "text": '修改成功',
                 }, form);
 
@@ -185,7 +185,7 @@
                 }
               } else {
                 // 返回的格式不对，或者data[0]不为0
-                $.fn.editable.msgbox({
+                $.fn.jqeditable.msgbox({
                   "text": '修改失败',
                 }, form);
 
@@ -198,7 +198,7 @@
 
             // 有错
             error: function (xhr, status, err) {
-              $.fn.editable.msgbox({
+              $.fn.jqeditable.msgbox({
                 "text": '修改失败',
               }, form);
 
@@ -226,7 +226,7 @@
 
     // 遍历子元素
     j_ele.children().each(function (idx, ele) {
-      $.fn.editable.make(ele, ele_params, settings);
+      $.fn.jqeditable.make(ele, ele_params, settings);
     });
   }
 
@@ -237,7 +237,7 @@
    * @param {Object} options
    * @param {Object} form 用作基准位置的form
    */
-  $.fn.editable.msgbox = function (options, form) {
+  $.fn.jqeditable.msgbox = function (options, form) {
     /* 默认设置 */
     var defaults = {
       "timeout": 3000, // 消息框显示多长时间，默认3000毫秒
@@ -275,7 +275,7 @@
    *
    * @param {String} str 要反序列化的字符串
    */
-  $.fn.editable.parseParams = function (str) {
+  $.fn.jqeditable.parseParams = function (str) {
     var items = [];
     var a = str.split('&');
     $.each(a, function (idx, item) {
@@ -298,7 +298,7 @@
   /**
    * 缺省配置
    */
-  $.fn.editable.defaults = {
+  $.fn.jqeditable.defaults = {
     "crossDomain": true, // 是否允许跨域
     "ajaxType": "POST", // ajax类型
   };
