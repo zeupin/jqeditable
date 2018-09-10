@@ -97,3 +97,33 @@ error: function(msg){
   ...
 }
 ```
+
+## 支持的输入控件
+
+### _TEXT
+
+* data-ed-type
+* data-ed-name
+* data-ed-params
+* data-ed-value
+
+### _SELECT
+
+* data-ed-name
+* data-ed-params
+* data-ed-value      初值
+* data-ed-options    指向一个options对象数组变量, 见附1
+
+附1
+```html
+<script>
+var city_options = [
+  {"value":"BJ", "caption":"北京"},
+  {"value":"SH", "caption":"上海"},
+  {"value":"GZ", "caption":"广州"},
+  {"value":"SZ", "caption":"深圳"}
+];
+</script>
+
+<span data-ed-type="select" data-ed-name="city" data-ed-options="city_options" data-ed-value="SH"></span>
+```

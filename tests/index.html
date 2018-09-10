@@ -62,9 +62,30 @@
     </tr>
   </table>
 
+  <p class="jqeditable">SELECT测试: <span data-ed-name="city" data-ed-type="select" data-ed-options="aaa_options"
+      data-ed-value="2"></span></p>
+
   <script>
+    const aaa_options = [{
+        "value": 1,
+        "caption": "北京"
+      },
+      {
+        "value": 2,
+        "caption": "上海"
+      },
+      {
+        "value": 3,
+        "caption": "广州"
+      },
+      {
+        "value": 4,
+        "caption": "深圳"
+      },
+    ];
+
     $(".jqeditable").jqeditable("http://ulook/wxsadmin/save", {
-      success: function(ele, data){
+      success: function (ele, data) {
         console.log(ele, data);
       }
     });

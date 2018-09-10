@@ -37,6 +37,25 @@
    * @param {Object} settings 传入的设置参数
    */
   $.fn.jqeditable.make = function (ele, params, settings) {
+    /*
+     * 根据data-ed-type进行输入控件构建
+     */
+    var input_type = "text"; // 默认是单行文本输入框
+    if (ele.hasAttribute("data-ed-type")) {
+      input_type = ele.getAttribute("data-ed-type").toString().toLowerCase();
+    }
+
+    var editor = null;
+
+    switch (input_type) {
+      case "text":
+        editor = $.fn.jqeditable._TEXT(ele, params, settings);
+        break;
+      case "select":
+        editor = $.fn.jqeditable._SELECT(ele, params, settings);
+        break;
+    }
+
     // $(ele)
     var j_ele = $(ele);
 
@@ -112,13 +131,8 @@
         });
 
         /* form 输入控件 */
-        var divInput = $('<div class="jqeditable_div_input"></div>');
-        var input = $('<input type="text"/>');
-        input.attr({
-          name: ed_name,
-          value: ed_value
-        });
-        divInput.append(input);
+        var divEditor = $('<div class="jqeditable_div_input"></div>');
+        divEditor.append(editor);
 
         /* form 提交按钮和取消按钮 */
         var divButtons = $('<div class="jqeditable_div_buttons"></div>');
@@ -130,7 +144,7 @@
         divButtons.append(submitBtn, cancelBtn);
 
         /* 拼装form */
-        form.append(divInput, divButtons);
+        form.append(divEditor, divButtons);
 
         /* form.submit() */
         form.submit(function (e) {
@@ -292,6 +306,82 @@
       }
     });
     return items;
+  }
+
+
+  /**
+   * 生成TEXT输入控件
+   *
+   * @param {HTMLElement} ele 当前元素
+   * @param {Array} params 附加参数
+   * @param {Object} settings 传入的设置参数
+   *
+   * @return {jQuery} 生成的输入控件,jQuery对象格式
+   */
+  $.fn.jqeditable._TEXT = function (ele, params, settings) {
+    var ed_name = ele.getAttribute("data-ed-name");
+    var ed_value = null;
+    if (ele.hasAttribute("data-ed-value")) {
+      ed_value = ele.getAttribute("data-ed-value");
+    } else {
+      ed_value = ele.innerText;
+    }
+
+    var editor = $('<input type="text" name="' + ed_name + '"/>');
+    editor.attr({
+      "name": ed_name,
+      "value": ed_value
+    });
+
+    // 返回生成的输入控件
+    return editor;
+  }
+
+
+  /**
+   * 生成SELECT输入控件
+   *
+   * @param {HTMLElement} ele 当前元素
+   * @param {Array} params 附加参数
+   * @param {Object} settings 传入的设置参数
+   *
+   * @return {jQuery} 生成的输入控件,jQuery对象格式
+   */
+  $.fn.jqeditable._SELECT = function (ele, params, settings) {
+    var ed_name = ele.getAttribute("data-ed-name");
+    var ed_value = ele.getAttribute("data-ed-value");
+    var ed_options = ele.getAttribute("data-ed-options");
+
+    /*
+     * select的选项集合, 要事先定义好一个数组变量, 格式为:
+     * const your_options = [
+     *  {"value":值1, "caption":"标题1"},
+     *  {"value":值2, "caption":"标题2"},
+     *  ...
+     * ]
+     */
+    var options = null;
+    try {
+      options = eval(ed_options);
+    } catch (e) {
+      // 构造出错, 返回一个null
+      return null;
+    }
+
+    var editor = $('<select name="' + ed_name + '"/>');
+    for (var option of options) {
+      var opt = $('<option/>');
+      opt.text(option.caption);
+      opt.attr('value', option.value);
+      if (option.value == ed_value) {
+        opt.attr("selected", 'selected');
+        ele.innerText = option.caption;
+      }
+      editor.append(opt);
+    }
+
+    // 返回生成的输入控件
+    return editor;
   }
 
 
