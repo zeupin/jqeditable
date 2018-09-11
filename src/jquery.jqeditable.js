@@ -332,7 +332,7 @@
     // 提交成功后的默认处理
     editor.success = function (value) {
       ele.setAttribute("data-ed-value", value);
-      ele.innerHTML = option.caption;
+      ele.innerHTML = value;
       return;
     }
 
