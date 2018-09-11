@@ -185,10 +185,23 @@
                 }, form);
 
                 /*
-                 * 如果设置了settings.success()回调函数，则交其处理。
-                 * 如果没有设置settings.success()回调函数，则用editor.success()处理。
+                 * 提交成功后,执行回调函数的优先顺序如下:
+                 * data-ed-success回调函数
+                 * settings.success()回调函数
+                 * editor.success()处理。
                  */
-                if (settings.success && $.isFunction(settings.success)) {
+                if (ele.hasAttribute("data-ed-success")) {
+                  var ed_success = ele.getAttribute("data-ed-success");
+                  try {
+                    ed_success = eval(ed_success);
+                    ed_success(ele, data[2]);
+                  } catch (e) {
+                    // 设置的提交成功后的回调函数不存在
+                    $.fn.jqeditable.msgbox({
+                      "text": '修改成功,但是回调函数不存在或设置错误',
+                    }, form);
+                  }
+                } else if (settings.success && $.isFunction(settings.success)) {
                   settings.success(ele, data[2]);
                 } else {
                   editor.success(data[2]);

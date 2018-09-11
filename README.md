@@ -110,6 +110,7 @@ error: function(msg){
 * data-ed-name
 * data-ed-params
 * data-ed-value
+* data-ed-success    指向一个success时的回调函数名
 
 ### _SELECT
 
@@ -117,6 +118,7 @@ error: function(msg){
 * data-ed-params
 * data-ed-value      初值
 * data-ed-options    指向一个options对象数组变量, 见附1
+* data-ed-success    指向一个success时的回调函数名
 
 附1
 ```html
