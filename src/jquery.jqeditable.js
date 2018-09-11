@@ -24,7 +24,7 @@
 
     // 对需要使用就地编辑的元素逐个进行设置
     return this.each(function () {
-      $.fn.jqeditable.make(this, [], settings);
+      $.fn.jqeditable._make(this, [], settings);
     });
   }
 
@@ -36,7 +36,7 @@
    * @param {Array} params 附加参数
    * @param {Object} settings 传入的设置参数
    */
-  $.fn.jqeditable.make = function (ele, params, settings) {
+  $.fn.jqeditable._make = function (ele, params, settings) {
     /*
      * 根据data-ed-type进行输入控件构建
      */
@@ -236,7 +236,7 @@
 
     // 遍历子元素
     j_ele.children().each(function (idx, ele) {
-      $.fn.jqeditable.make(ele, ele_params, settings);
+      $.fn.jqeditable._make(ele, ele_params, settings);
     });
   }
 
