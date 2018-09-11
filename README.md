@@ -64,6 +64,10 @@
 
 ## options
 
+* ajaxType
+* success()
+* error()
+
 ### ajaxType
 
 见`jQuery.ajax()`的`type`选项，可为`POST`、`GET`等。默认为`POST`。

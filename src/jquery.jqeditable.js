@@ -185,17 +185,13 @@
                 }, form);
 
                 /*
-                 * 如果设置了success回调函数，则交success处理。
-                 * 如果没有设置success回调函数，则用默认方式处理。
+                 * 如果设置了settings.success()回调函数，则交其处理。
+                 * 如果没有设置settings.success()回调函数，则用editor.success()处理。
                  */
                 if (settings.success && $.isFunction(settings.success)) {
                   settings.success(ele, data[2]);
                 } else {
-                  // 把返回的数据保存到 data-ed-value
-                  jqthis.attr("data-ed-value", data[2]);
-
-                  // 用返回的数据更新text
-                  jqthis.text(data[2]);
+                  editor.success(data[2]);
                 }
               } else {
                 // 返回的格式不对，或者data[0]不为0
@@ -333,6 +329,13 @@
       "value": ed_value
     });
 
+    // 提交成功后的默认处理
+    editor.success = function (value) {
+      ele.setAttribute("data-ed-value", value);
+      ele.innerHTML = option.caption;
+      return;
+    }
+
     // 返回生成的输入控件
     return editor;
   }
@@ -378,6 +381,17 @@
         ele.innerText = option.caption;
       }
       editor.append(opt);
+    }
+
+    // 提交成功后的默认处理
+    editor.success = function (value) {
+      for (var option of options) {
+        if (value == option.value) {
+          ele.setAttribute("data-ed-value", value);
+          ele.innerHTML = option.caption;
+          return;
+        }
+      }
     }
 
     // 返回生成的输入控件
