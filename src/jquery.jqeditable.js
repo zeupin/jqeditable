@@ -6,9 +6,8 @@
  * @license MIT License (see https://github.com/zeupin/jqeditable/blob/master/LICENSE)
  *
  */
-(function ($) {
-
-  'use strict';
+(function($) {
+  "use strict";
 
   /**
    * 插件的主函数
@@ -16,18 +15,22 @@
    * @param {String|Function} url 服务器端的php文件地址或本地的js处理函数
    * @param {Object} options 选项
    */
-  $.fn.jqeditable = function (url, options) {
+  $.fn.jqeditable = function(url, options) {
     // 合并设置
-    var settings = $.extend({}, $.fn.jqeditable.defaults, {
-      "url": url
-    }, options);
+    var settings = $.extend(
+      {},
+      $.fn.jqeditable.defaults,
+      {
+        url: url
+      },
+      options
+    );
 
     // 对需要使用就地编辑的元素逐个进行设置
-    return this.each(function () {
+    return this.each(function() {
       $.fn.jqeditable._make(this, [], settings);
     });
-  }
-
+  };
 
   /**
    * 输入界面构造器
@@ -36,23 +39,29 @@
    * @param {Array} params 附加参数
    * @param {Object} settings 传入的设置参数
    */
-  $.fn.jqeditable._make = function (ele, params, settings) {
+  $.fn.jqeditable._make = function(ele, params, settings) {
     /*
      * 根据data-ed-type进行输入控件构建
      */
     var input_type = "text"; // 默认是单行文本输入框
     if (ele.hasAttribute("data-ed-type")) {
-      input_type = ele.getAttribute("data-ed-type").toString().toLowerCase();
+      input_type = ele
+        .getAttribute("data-ed-type")
+        .toString()
+        .toLowerCase();
     }
 
+    // 生成输入控件
     var editor = null;
-
     switch (input_type) {
       case "text":
         editor = $.fn.jqeditable._TEXT(ele, params, settings);
         break;
       case "select":
         editor = $.fn.jqeditable._SELECT(ele, params, settings);
+        break;
+      case "file":
+        editor = $.fn.jqeditable._FILE(ele, params, settings);
         break;
     }
 
@@ -74,10 +83,8 @@
 
     // 如果有data-ed-name属性，则生成一个form
     if (ele.hasAttribute("data-ed-name")) {
-
       // dblclick可激活编辑状态
-      j_ele.dblclick(function (e) {
-
+      j_ele.dblclick(function(e) {
         /* $(this) */
         var jqthis = $(this);
 
@@ -100,7 +107,16 @@
         var form = $("<form></form>");
 
         // form.attrs
-        form.attr({});
+        switch (input_type) {
+          case "file":
+            form.attr({
+              method: "POST",
+              enctype: "multipart/form-data"
+            });
+            break;
+          default:
+            form.attr({});
+        }
 
         // form.position 将form定位到元素一样的位置
         var posParent = this;
@@ -109,14 +125,14 @@
         while (posParent != document.body) {
           posParent = posParent.offsetParent;
           var posParentPosition = $(posParent).css("position");
-          if (posParentPosition == 'absolute') {
+          if (posParentPosition == "absolute") {
             break;
-          } else if (posParentPosition == 'relative') {
+          } else if (posParentPosition == "relative") {
             // 正常显示流
             posLeft += posParent.offsetLeft;
             posTop += posParent.offsetTop;
             break;
-          } else if (posParentPosition == 'fixed') {
+          } else if (posParentPosition == "fixed") {
             break;
           } else {
             // 正常显示流
@@ -126,8 +142,8 @@
         }
         form.css({
           position: "absolute",
-          left: posLeft + 'px',
-          top: posTop + 'px'
+          left: posLeft + "px",
+          top: posTop + "px"
         });
 
         /* form 输入控件 */
@@ -138,7 +154,7 @@
         var divButtons = $('<div class="jqeditable_div_buttons"></div>');
         var submitBtn = $('<input type="submit" value="提交">');
         var cancelBtn = $('<input type="button" value="取消">');
-        cancelBtn.click(function (e) {
+        cancelBtn.click(function(e) {
           form.remove();
         });
         divButtons.append(submitBtn, cancelBtn);
@@ -147,28 +163,35 @@
         form.append(divEditor, divButtons);
 
         /* form.submit() */
-        form.submit(function (e) {
-
+        form.submit(function(e) {
           /* 阻止表单的默认行为 */
           e.preventDefault();
           e.stopPropagation();
 
-          var formdata = $(this).serializeArray();
-          var data = ele_params.concat(formdata);
+          // 创建标准的FormData对象
+          var formdata = new FormData(form[0]);
+
+          // 和ed-data-params的数据进行合并
+          for (var i in ele_params) {
+            formdata.append(ele_params[i].name, ele_params[i].value);
+          }
 
           // ajax请求
           var request = {
             url: settings.url,
             type: settings.ajaxType,
-            data: data,
-            dataType: "json",
+            cache: false, // 不缓存
+            processData: false, // jQuery不要处理要发送的数据
+            contentType: false, // jQuery不要设置Content-Type请求头
+            data: formdata, // 封装好的数据
+            dataType: "json" // 返回的数据类型
           };
 
           // ajax.是否允许跨域
           if (settings.crossDomain) {
             request.crossDomain = true;
             request.xhrFields = {
-              'Access-Control-Allow-Origin': '*'
+              "Access-Control-Allow-Origin": "*"
             };
             console.log(request);
           }
@@ -176,19 +199,21 @@
           // ajax应答
           var response = {
             // 成功
-            success: function (data, status, xhq) {
-
+            success: function(data, status, xhq) {
               if (data[0] === 0) {
                 // 显示“修改成功”
-                $.fn.jqeditable.msgbox({
-                  "text": '修改成功',
-                }, form);
+                $.fn.jqeditable.msgbox(
+                  {
+                    text: "修改成功"
+                  },
+                  form
+                );
 
                 /*
                  * 提交成功后,执行回调函数的优先顺序如下:
-                 * data-ed-success回调函数
-                 * settings.success()回调函数
-                 * editor.success()处理。
+                 * 1. data-ed-success指向的回调函数。
+                 * 2. settings.success()定义的回调函数。
+                 * 3. editor.success()定义的回调函数。
                  */
                 if (ele.hasAttribute("data-ed-success")) {
                   var ed_success = ele.getAttribute("data-ed-success");
@@ -197,9 +222,12 @@
                     ed_success(ele, data[2]);
                   } catch (e) {
                     // 设置的提交成功后的回调函数不存在
-                    $.fn.jqeditable.msgbox({
-                      "text": '修改成功,但是回调函数不存在或设置错误',
-                    }, form);
+                    $.fn.jqeditable.msgbox(
+                      {
+                        text: "修改成功,但是回调函数不存在或设置错误"
+                      },
+                      form
+                    );
                   }
                 } else if (settings.success && $.isFunction(settings.success)) {
                   settings.success(ele, data[2]);
@@ -208,9 +236,12 @@
                 }
               } else {
                 // 返回的格式不对，或者data[0]不为0
-                $.fn.jqeditable.msgbox({
-                  "text": '修改失败',
-                }, form);
+                $.fn.jqeditable.msgbox(
+                  {
+                    text: "修改失败"
+                  },
+                  form
+                );
 
                 // 如果设置了error回调函数
                 if (settings.error && $.isFunction(settings.error)) {
@@ -220,17 +251,20 @@
             },
 
             // 有错
-            error: function (xhr, status, err) {
-              $.fn.jqeditable.msgbox({
-                "text": '修改失败',
-              }, form);
+            error: function(xhr, status, err) {
+              $.fn.jqeditable.msgbox(
+                {
+                  text: "修改失败"
+                },
+                form
+              );
 
               // 如果设置了error回调函数
               if (settings.error && $.isFunction(settings.error)) {
                 settings.error(status);
               }
             }
-          }
+          };
 
           // 发起请求
           $.ajax($.extend(request, response));
@@ -243,16 +277,15 @@
         $(posParent).after(form);
 
         /* focus到form的第一个有效输入控件 */
-        form.find(':input:visible:enabled:first').focus();
+        form.find(":input:visible:enabled:first").focus();
       });
     }
 
     // 遍历子元素
-    j_ele.children().each(function (idx, ele) {
+    j_ele.children().each(function(idx, ele) {
       $.fn.jqeditable._make(ele, ele_params, settings);
     });
-  }
-
+  };
 
   /**
    * 显示一个消息框
@@ -260,22 +293,22 @@
    * @param {Object} options
    * @param {Object} form 用作基准位置的form
    */
-  $.fn.jqeditable.msgbox = function (options, form) {
+  $.fn.jqeditable.msgbox = function(options, form) {
     /* 默认设置 */
     var defaults = {
-      "timeout": 3000, // 消息框显示多长时间，默认3000毫秒
+      timeout: 3000 // 消息框显示多长时间，默认3000毫秒
     };
 
     /* 合并设置 */
     var settings = $.extend(defaults, options);
 
     /* div */
-    var div = $('<div></div>');
+    var div = $("<div></div>");
     div.css({
-      "position": "absolute",
-      "left": form.css("left"),
-      "top": form.css("top"),
-      "border": "1px solid orange",
+      position: "absolute",
+      left: form.css("left"),
+      top: form.css("top"),
+      border: "1px solid orange",
       "background-color": "yellow"
     });
     div.text(settings.text);
@@ -287,22 +320,23 @@
     form.after(div);
 
     /* 消息框只显示指定的时间，默认是3秒 */
-    window.setTimeout(function () {
+    window.setTimeout(function() {
       div.remove();
     }, settings.timeout);
-  }
-
+  };
 
   /**
    * jQuery.serialize()函数的逆函数
    *
-   * @param {String} str 要反序列化的字符串
+   * @param {String} str 要反序列化的字符串,形如: 名=值&名=值&...
+   *
+   * @return Array 若干名值对
    */
-  $.fn.jqeditable.parseParams = function (str) {
+  $.fn.jqeditable.parseParams = function(str) {
     var items = [];
-    var a = str.split('&');
-    $.each(a, function (idx, item) {
-      var eqpos = item.indexOf('=');
+    var a = str.split("&");
+    $.each(a, function(idx, item) {
+      var eqpos = item.indexOf("=");
       if (eqpos == -1 || eqpos == 0) {
         // invalid
       } else {
@@ -310,13 +344,12 @@
         var value = item.substring(eqpos + 1);
         items.push({
           name: name,
-          value: value,
+          value: value
         });
       }
     });
     return items;
-  }
-
+  };
 
   /**
    * 生成TEXT输入控件
@@ -327,7 +360,7 @@
    *
    * @return {jQuery} 生成的输入控件,jQuery对象格式
    */
-  $.fn.jqeditable._TEXT = function (ele, params, settings) {
+  $.fn.jqeditable._TEXT = function(ele, params, settings) {
     var ed_name = ele.getAttribute("data-ed-name");
     var ed_value = null;
     if (ele.hasAttribute("data-ed-value")) {
@@ -336,23 +369,22 @@
       ed_value = ele.innerText;
     }
 
-    var editor = $('<input type="text" name="' + ed_name + '"/>');
+    var editor = $('<input type="text"/>');
     editor.attr({
-      "name": ed_name,
-      "value": ed_value
+      name: ed_name,
+      value: ed_value
     });
 
     // 提交成功后的默认处理
-    editor.success = function (value) {
+    editor.success = function(value) {
       ele.setAttribute("data-ed-value", value);
       ele.innerHTML = value;
       return;
-    }
+    };
 
     // 返回生成的输入控件
     return editor;
-  }
-
+  };
 
   /**
    * 生成SELECT输入控件
@@ -363,7 +395,7 @@
    *
    * @return {jQuery} 生成的输入控件,jQuery对象格式
    */
-  $.fn.jqeditable._SELECT = function (ele, params, settings) {
+  $.fn.jqeditable._SELECT = function(ele, params, settings) {
     var ed_name = ele.getAttribute("data-ed-name");
     var ed_value = ele.getAttribute("data-ed-value");
     var ed_options = ele.getAttribute("data-ed-options");
@@ -386,18 +418,18 @@
 
     var editor = $('<select name="' + ed_name + '"/>');
     for (var option of options) {
-      var opt = $('<option/>');
+      var opt = $("<option/>");
       opt.text(option.caption);
-      opt.attr('value', option.value);
+      opt.attr("value", option.value);
       if (option.value == ed_value) {
-        opt.attr("selected", 'selected');
+        opt.attr("selected", "selected");
         ele.innerText = option.caption;
       }
       editor.append(opt);
     }
 
     // 提交成功后的默认处理
-    editor.success = function (value) {
+    editor.success = function(value) {
       for (var option of options) {
         if (value == option.value) {
           ele.setAttribute("data-ed-value", value);
@@ -405,18 +437,45 @@
           return;
         }
       }
-    }
+    };
 
     // 返回生成的输入控件
     return editor;
-  }
+  };
 
+  /**
+   * 生成FILE输入控件
+   *
+   * @param {HTMLElement} ele 当前元素
+   * @param {Array} params 附加参数
+   * @param {Object} settings 传入的设置参数
+   *
+   * @return {jQuery} 生成的输入控件,jQuery对象格式
+   */
+  $.fn.jqeditable._FILE = function(ele, params, settings) {
+    var ed_name = ele.getAttribute("data-ed-name");
+
+    var editor = $('<input type="file"/>');
+    editor.attr({
+      name: ed_name
+    });
+
+    // 提交成功后的默认处理
+    editor.success = function(value) {
+      ele.setAttribute("data-ed-value", value);
+      ele.innerHTML = value;
+      return;
+    };
+
+    // 返回生成的输入控件
+    return editor;
+  };
 
   /**
    * 缺省配置
    */
   $.fn.jqeditable.defaults = {
-    "crossDomain": true, // 是否允许跨域
-    "ajaxType": "POST", // ajax类型
+    crossDomain: true, // 是否允许跨域
+    ajaxType: "POST" // ajax类型
   };
 })(jQuery);

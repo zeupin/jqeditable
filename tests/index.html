@@ -65,6 +65,10 @@
   <p class="jqeditable">SELECT测试: <span data-ed-name="city" data-ed-type="select" data-ed-options="aaa_options"
       data-ed-value="2"></span></p>
 
+  <div class="filetest" src="" alt="" data-ed-type="file" data-ed-name="icon">
+    点我上传文件
+  </div>
+
   <script>
     const aaa_options = [{
         "value": 1,
@@ -85,6 +89,12 @@
     ];
 
     $(".jqeditable").jqeditable("http://ulook/wxsadmin/save", {
+      success: function (ele, data) {
+        console.log(ele, data);
+      }
+    });
+
+    $(".filetest").jqeditable("http://ulook/wxsadmin/save", {
       success: function (ele, data) {
         console.log(ele, data);
       }
