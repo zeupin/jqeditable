@@ -60,6 +60,9 @@
       case "select":
         editor = $.fn.jqeditable._SELECT(ele, params, settings);
         break;
+      case "textarea":
+        editor = $.fn.jqeditable._TEXTAREA(ele, params, settings);
+        break;
       case "file":
         editor = $.fn.jqeditable._FILE(ele, params, settings);
         break;
@@ -374,6 +377,56 @@
       name: ed_name,
       value: ed_value
     });
+
+    // 提交成功后的默认处理
+    editor.success = function(value) {
+      ele.setAttribute("data-ed-value", value);
+      ele.innerHTML = value;
+      return;
+    };
+
+    // 返回生成的输入控件
+    return editor;
+  };
+
+  /**
+   * 生成TEXTAREA输入控件
+   *
+   * @param {HTMLElement} ele 当前元素
+   * @param {Array} params 附加参数
+   * @param {Object} settings 传入的设置参数
+   *
+   * @return {jQuery} 生成的输入控件,jQuery对象格式
+   */
+  $.fn.jqeditable._TEXTAREA = function(ele, params, settings) {
+    var ed_name = ele.getAttribute("data-ed-name");
+
+    var ed_value = null;
+    if (ele.hasAttribute("data-ed-value")) {
+      ed_value = ele.getAttribute("data-ed-value");
+    } else {
+      ed_value = ele.innerText;
+    }
+
+    // 行数
+    var ed_rows = 6;
+    if (ele.hasAttribute("data-ed-rows")) {
+      ed_rows = ele.getAttribute("data-ed-rows");
+    }
+
+    // 列数
+    var ed_cols = 40;
+    if (ele.hasAttribute("data-ed-cols")) {
+      ed_cols = ele.getAttribute("data-ed-cols");
+    }
+
+    var editor = $("<textarea/>");
+    editor.attr({
+      name: ed_name,
+      cols: ed_cols, // 默认的列数
+      rows: ed_rows // 默认的行数
+    });
+    editor.text(ed_value);
 
     // 提交成功后的默认处理
     editor.success = function(value) {

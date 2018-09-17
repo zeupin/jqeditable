@@ -106,14 +106,15 @@ error: function(msg){
 
 ### _TEXT
 
-* data-ed-type
+* data-ed-type       text或不设置
 * data-ed-name
 * data-ed-params
-* data-ed-value
+* data-ed-value      初值, 如果不设置, 则直接取值为innerText
 * data-ed-success    指向一个success时的回调函数名
 
 ### _SELECT
 
+* data-ed-type       select
 * data-ed-name
 * data-ed-params
 * data-ed-value      初值
@@ -133,3 +134,20 @@ var city_options = [
 
 <span data-ed-type="select" data-ed-name="city" data-ed-options="city_options" data-ed-value="SH"></span>
 ```
+
+### _FILE
+
+* data-ed-type       file
+* data-ed-name
+* data-ed-params
+* data-ed-success    指向一个success时的回调函数名
+
+### _TEXTAREA
+
+* data-ed-type       textarea
+* data-ed-name
+* data-ed-params
+* data-ed-value      初值, 如果不设置, 则直接取值为innerText
+* data-ed-cols       列数, 默认为40
+* data-ed-rows       行数, 默认为6
+* data-ed-success    指向一个success时的回调函数名
