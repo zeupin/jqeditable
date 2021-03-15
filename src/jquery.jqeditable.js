@@ -17,10 +17,8 @@
    */
   $.fn.jqeditable = function(url, options) {
     // 合并设置
-    var settings = $.extend(
-      {},
-      $.fn.jqeditable.defaults,
-      {
+    var settings = $.extend({},
+      $.fn.jqeditable.defaults, {
         url: url
       },
       options
@@ -205,8 +203,7 @@
             success: function(data, status, xhq) {
               if (data[0] === 0) {
                 // 显示“修改成功”
-                $.fn.jqeditable.msgbox(
-                  {
+                $.fn.jqeditable.msgbox({
                     text: "修改成功"
                   },
                   form
@@ -225,8 +222,7 @@
                     ed_success(ele, data[2]);
                   } catch (e) {
                     // 设置的提交成功后的回调函数不存在
-                    $.fn.jqeditable.msgbox(
-                      {
+                    $.fn.jqeditable.msgbox({
                         text: "修改成功,但是回调函数不存在或设置错误"
                       },
                       form
@@ -239,8 +235,7 @@
                 }
               } else {
                 // 返回的格式不对，或者data[0]不为0
-                $.fn.jqeditable.msgbox(
-                  {
+                $.fn.jqeditable.msgbox({
                     text: "修改失败"
                   },
                   form
@@ -255,8 +250,7 @@
 
             // 有错
             error: function(xhr, status, err) {
-              $.fn.jqeditable.msgbox(
-                {
+              $.fn.jqeditable.msgbox({
                   text: "修改失败"
                 },
                 form
